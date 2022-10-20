@@ -31,6 +31,6 @@ services:
     ports:
       - '27017:27017'
     environment:
-      MONGODB_DATABASE: ClashRoyale
+      MONGODB_DATABASE: clash_royale
     volumes:
       - ./mongo:/data/db
