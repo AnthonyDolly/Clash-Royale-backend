@@ -14,8 +14,8 @@ import { ValidateMongoIdPipe } from './../common/pipes/validate-mongo-id.pipe';
 import { Auth, GetUser } from '..//auth/decorators';
 import { ValidRoles } from '..//auth/interfaces';
 import { User } from './entities/user.entity';
-import { RequestResetPasswordDTO } from './dto/requestResetPassword.dto';
-import { ResetPasswordDTO } from './dto/resetPassword.dto';
+import { RequestResetPasswordDto } from './dto/requestResetPassword.dto';
+import { ResetPasswordDto } from './dto/resetPassword.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('users')
@@ -40,14 +40,14 @@ export class UsersController {
 
   @Patch('request-reset-password')
   requestResetPassword(
-    @Body() requestResetPasswordDTO: RequestResetPasswordDTO,
+    @Body() requestResetPasswordDto: RequestResetPasswordDto,
   ) {
-    return this.usersService.requestResetPassword(requestResetPasswordDTO);
+    return this.usersService.requestResetPassword(requestResetPasswordDto);
   }
 
   @Patch('reset-password')
-  resetPassword(@Body() resetPasswordDTO: ResetPasswordDTO) {
-    return this.usersService.resetPassword(resetPasswordDTO);
+  resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.usersService.resetPassword(resetPasswordDto);
   }
 
   @Patch('change-password')
