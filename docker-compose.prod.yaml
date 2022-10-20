@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  clash_royale_app:
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: clash_royale-docker
+    container_name: clash_royale_app
+    restart: always # reiniciar el contenedor si se detiene
+    ports:
+      - '${PORT}:${PORT}'
+    # working_dir: /var/www/pokedex
+    environment:
+      MONGODB: ${MONGODB}
+      PORT: ${PORT}
+      DEFAULT_LIMIT: ${DEFAULT_LIMIT}
+      JWT_SECRET: ${JWT_SECRET}
+      CLASH_ROYALE_API_KEY: ${CLASH_ROYALE_API_KEY}
+      CLASH_ROYALE_MAIL_API_KEY: ${CLASH_ROYALE_MAIL_API_KEY}
+      FROM_EMAIL: ${FROM_EMAIL}
+    # volumes:
+    #   - ./:/var/www/pokedex
+
+  db:
+    image: mongo:5
+    container_name: mongo-clash_royale
+    restart: always
+    ports:
+      - '27017:27017'
+    environment:
+      MONGODB_DATABASE: ClashRoyale
+    volumes:
+      - ./mongo:/data/db
