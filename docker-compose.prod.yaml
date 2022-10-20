@@ -26,7 +26,7 @@ services:
 
   db:
     image: mongo:5
-    container_name: mongo-clash_royale
+    container_name: mongo-clash
     restart: always
     ports:
       - '27017:27017'

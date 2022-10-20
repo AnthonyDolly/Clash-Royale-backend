@@ -28,12 +28,12 @@ export class MembersService {
     return data.memberList;
   }
 
-  findOne(id: string) {
+  async findOne(id: string) {
     if (!id.includes('#')) {
       id = `#${id}`;
     }
     try {
-      const member = this.memberModel.findOne({ tag: id });
+      const member = await this.memberModel.findOne({ tag: id });
       return member;
     } catch (error) {
       return error;
@@ -45,8 +45,8 @@ export class MembersService {
     const membersFromApi = await this.getDataFromClashRoyaleApi();
 
     // Buscando los miembros de la API en la base de datos
-    membersFromApi.forEach((memberFromApi) => {
-      const member = this.findOne(memberFromApi.tag);
+    membersFromApi.forEach(async (memberFromApi) => {
+      const member = await this.findOne(memberFromApi.tag);
 
       if (!member) {
         const newMember = new this.memberModel(memberFromApi);
