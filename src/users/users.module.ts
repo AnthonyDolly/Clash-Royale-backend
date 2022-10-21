@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
@@ -23,7 +23,7 @@ import { JoiValidationSchema } from './../config/joi.validation';
         schema: UserSchema,
       },
     ]),
-    MembersModule,
+    forwardRef(() => MembersModule),
     AuthModule,
     SendGridModule.forRoot({
       apikey: process.env.CLASH_ROYALE_MAIL_API_KEY,
@@ -31,6 +31,6 @@ import { JoiValidationSchema } from './../config/joi.validation';
   ],
   controllers: [UsersController],
   providers: [UsersService],
-  exports: [MongooseModule],
+  exports: [MongooseModule, UsersService],
 })
 export class UsersModule {}

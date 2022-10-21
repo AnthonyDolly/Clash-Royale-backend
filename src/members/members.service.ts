@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateMemberDto } from './dto/create-member.dto';
@@ -7,12 +7,15 @@ import { Member } from './entities/member.entity';
 
 import { AxiosAdapter } from './../common/adapters/axios.adapter';
 import { ClashResponse } from './interfaces/clash-response.interface';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class MembersService {
   constructor(
     @InjectModel(Member.name) private readonly memberModel: Model<Member>,
     private readonly http: AxiosAdapter,
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
   ) {}
 
   async getDataFromClashRoyaleApi() {
@@ -44,6 +47,21 @@ export class MembersService {
     const members = await this.memberModel.find();
     const membersFromApi = await this.getDataFromClashRoyaleApi();
 
+    const user = await this.usersService.findOne('6351dbb6074876cc220aac4a');
+
+    if (!user) {
+      const newUser = await this.usersService.create({
+        name: 'Shirley',
+        lastName: 'Cruz',
+        phone: '+51999999999',
+        email: 'shirley@gmail.com',
+        password: 'Abc123',
+        code: null,
+        tag: '#8V98QYV8P',
+      });
+
+      newUser.save();
+    }
     // Buscando los miembros de la API en la base de datos
     membersFromApi.forEach(async (memberFromApi) => {
       const member = await this.findOne(memberFromApi.tag);

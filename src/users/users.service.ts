@@ -1,11 +1,13 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { isValidObjectId, Model } from 'mongoose';
+import mongoose, { isValidObjectId, Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -22,6 +24,7 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
+    @Inject(forwardRef(() => MembersService))
     private readonly membersService: MembersService,
     private readonly sendGrid: SendGridService,
   ) {}
@@ -31,7 +34,11 @@ export class UsersService {
       const { password, ...userData } = createUserDto;
 
       const member = await this.membersService.findOne(userData.tag);
-      const invitedBy = await this.findOne(userData.code);
+
+      let invitedBy = null;
+      if (userData.code) {
+        invitedBy = await this.findOne(userData.code);
+      }
 
       createUserDto.password = await bcrypt.hash(password, 10);
 
@@ -40,7 +47,7 @@ export class UsersService {
         code: null,
         password: createUserDto.password,
         member: member._id,
-        invitedBy: invitedBy._id,
+        invitedBy: invitedBy ? invitedBy._id : null,
       });
 
       return user;
@@ -68,6 +75,20 @@ export class UsersService {
     if (isValidObjectId(term)) {
       user = await this.userModel
         .findById(term)
+        .populate({
+          path: 'invitedBy',
+          select: 'name lastName',
+        })
+        .populate({
+          path: 'member',
+          select: 'name tag',
+        });
+      if (user) return user;
+    }
+
+    if (isValidObjectId(term)) {
+      user = await this.userModel
+        .findOne({ member: new mongoose.Types.ObjectId(term) })
         .populate({
           path: 'invitedBy',
           select: 'name lastName',
@@ -107,8 +128,8 @@ export class UsersService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    return await this.userModel.findByIdAndDelete(id);
   }
 
   async generateCode(user: User) {

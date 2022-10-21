@@ -28,7 +28,7 @@ export class UsersController {
   }
 
   @Get()
-  @Auth(ValidRoles.COLEADER)
+  @Auth(ValidRoles.LIDER, ValidRoles.COLEADER)
   findAll() {
     return this.usersService.findAll();
   }
@@ -78,13 +78,13 @@ export class UsersController {
   }
 
   @Post('u/generate-code')
-  @Auth(ValidRoles.COLEADER)
+  @Auth(ValidRoles.LIDER, ValidRoles.COLEADER)
   generateCode(@GetUser() user: User) {
     return this.usersService.generateCode(user);
   }
 
   @Delete('u/delete-code')
-  @Auth(ValidRoles.COLEADER)
+  @Auth(ValidRoles.LIDER, ValidRoles.COLEADER)
   deleteCode(@GetUser() user: User) {
     return this.usersService.deleteCode(user);
   }

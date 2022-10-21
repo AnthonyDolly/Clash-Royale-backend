@@ -16,11 +16,13 @@ export class User extends Document {
 
   @Prop({
     required: true,
+    unique: true,
   })
   phone: string;
 
   @Prop({
     required: true,
+    unique: true,
   })
   email: string;
 
@@ -53,6 +55,7 @@ export class User extends Document {
     type: Types.ObjectId,
     ref: Member.name,
     required: true,
+    unique: true,
   })
   member: Member | Types.ObjectId;
 }
