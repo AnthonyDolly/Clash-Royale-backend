@@ -47,7 +47,9 @@ export class MembersService {
     const members = await this.memberModel.find();
     const membersFromApi = await this.getDataFromClashRoyaleApi();
 
-    const user = await this.usersService.findOne('6351dbb6074876cc220aac4a');
+    const user = await this.usersService.findIfUserExist(
+      '6351dbb6074876cc220aac4a',
+    );
 
     if (!user) {
       const newUser = await this.usersService.create({

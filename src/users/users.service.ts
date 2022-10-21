@@ -86,20 +86,6 @@ export class UsersService {
       if (user) return user;
     }
 
-    if (isValidObjectId(term)) {
-      user = await this.userModel
-        .findOne({ member: new mongoose.Types.ObjectId(term) })
-        .populate({
-          path: 'invitedBy',
-          select: 'name lastName',
-        })
-        .populate({
-          path: 'member',
-          select: 'name tag',
-        });
-      if (user) return user;
-    }
-
     if (term.includes('@')) {
       user = await this.userModel
         .findOne({ email: term })
@@ -122,6 +108,12 @@ export class UsersService {
     if (!user) throw new NotFoundException(`User with ${term} not found`);
 
     return user;
+  }
+
+  async findIfUserExist(member: string) {
+    return await this.userModel.findOne({
+      member: new mongoose.Types.ObjectId(member),
+    });
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
