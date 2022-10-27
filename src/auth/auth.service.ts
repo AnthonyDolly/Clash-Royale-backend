@@ -45,6 +45,7 @@ export class AuthService {
         email: user.email,
         phone: user.phone,
         role: user.member['role'],
+        code: user.code,
       }),
     };
   }
@@ -59,6 +60,7 @@ export class AuthService {
         email: user.email,
         phone: user.phone,
         role: user.member['role'],
+        code: user.code,
       }),
     };
   }

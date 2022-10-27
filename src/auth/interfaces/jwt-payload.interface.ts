@@ -5,5 +5,6 @@ export interface JwtPayload {
   phone: string;
   email: string;
   role: string;
+  code: string;
   //TODO: añadir todo lo que quieran grabar en el token
 }
