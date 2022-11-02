@@ -76,23 +76,21 @@ export class MembersService {
       }
     });
 
-    const user = await this.usersService.findIfUserExist(
-      '6351dbb6074876cc220aac4a',
-    );
-
-    if (!user) {
-      const newUser = await this.usersService.create({
-        name: 'Shirley',
-        lastName: 'Cruz',
-        phone: '+51999999999',
-        email: 'shirley@gmail.com',
-        password: 'Abc123',
-        code: null,
-        tag: '#8V98QYV8P',
-      });
-
-      newUser.save();
-    }
+    setTimeout(async () => {
+      const user = await this.usersService.findIfUserExist('8V98QYV8P');
+      if (!user) {
+        const newUser = await this.usersService.create({
+          name: 'Shirley',
+          lastName: 'Cruz',
+          phone: '+51999999999',
+          email: 'shirley@gmail.com',
+          password: 'Abc123',
+          code: null,
+          tag: '#8V98QYV8P',
+        });
+        newUser.save();
+      }
+    }, 1000 * 60 * 60 * 24);
 
     return 'Members Inserted';
   }

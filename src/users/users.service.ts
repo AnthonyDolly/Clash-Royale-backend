@@ -110,10 +110,20 @@ export class UsersService {
     return user;
   }
 
-  async findIfUserExist(member: string) {
-    return await this.userModel.findOne({
-      member: new mongoose.Types.ObjectId(member),
+  async findIfUserExist(tag: string) {
+    const member = await this.membersService.findOne(tag);
+    console.log(member);
+
+    const user = await this.userModel.findOne({
+      member: member._id,
     });
+    console.log(user);
+
+    if (user) {
+      return user;
+    }
+
+    return null;
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
