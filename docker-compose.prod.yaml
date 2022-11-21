@@ -12,6 +12,8 @@ services:
     restart: always # reiniciar el contenedor si se detiene
     ports:
       - '${PORT}:${PORT}'
+    networks:
+      - clash_royale_network
     # working_dir: /var/www/pokedex
     environment:
       MONGODB: ${MONGODB}
@@ -35,3 +37,9 @@ services:
       MONGODB_DATABASE: clash_royale
     volumes:
       - ./mongo/clash_royale:/data/db
+    networks:
+      - clash_royale_network
+
+networks:
+  clash_royale_network:
+    driver: bridge
