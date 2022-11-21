@@ -35,3 +35,7 @@ services:
       MONGODB_DATABASE: clash_royale
     volumes:
       - ./mongo:/data/db
+
+networks:
+  default:
+    name: clash_royale
