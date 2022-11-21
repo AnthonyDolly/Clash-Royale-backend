@@ -77,6 +77,7 @@ export class MembersService {
     });
 
     setTimeout(async () => {
+      console.log('Actualizando miembros...');
       const user = await this.usersService.findIfUserExist('8V98QYV8P');
       if (!user) {
         const newUser = await this.usersService.create({
@@ -90,7 +91,7 @@ export class MembersService {
         });
         newUser.save();
       }
-    }, 1000 * 60 * 60 * 24);
+    }, 2000);
 
     return 'Members Inserted';
   }
