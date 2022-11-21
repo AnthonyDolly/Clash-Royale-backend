@@ -34,4 +34,4 @@ services:
     environment:
       MONGODB_DATABASE: clash_royale
     volumes:
-      - ./mongo:/data/db
+      - ./mongo/clash_royale:/data/db
