@@ -1,10 +1,8 @@
 export interface JwtPayload {
   id: string;
   name: string;
-  lastName: string;
-  phone: string;
-  email: string;
   role: string;
-  code: string;
+  photo: string;
+  points: number;
   //TODO: añadir todo lo que quieran grabar en el token
 }

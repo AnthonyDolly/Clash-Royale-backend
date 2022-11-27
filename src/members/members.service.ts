@@ -221,7 +221,10 @@ export class MembersService {
       return 'No members found';
     }
 
-    return members;
+    return {
+      date: new Date(),
+      members,
+    };
   }
 
   update(id: number, updateMemberDto: UpdateMemberDto) {
@@ -233,7 +236,7 @@ export class MembersService {
   }
 
   async getNumberOfMembers() {
-    const members = await this.memberModel.find({ isActive: true });
+    const members = await this.getDataFromClashRoyaleApi();
 
     if (members) {
       return {

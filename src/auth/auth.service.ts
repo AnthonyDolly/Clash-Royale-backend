@@ -41,11 +41,9 @@ export class AuthService {
       token: this.getJwt({
         id: user.id,
         name: user.name,
-        lastName: user.lastName,
-        email: user.email,
-        phone: user.phone,
         role: user.member['role'],
-        code: user.code,
+        photo: user.photo,
+        points: user.points,
       }),
     };
   }
@@ -56,11 +54,9 @@ export class AuthService {
       token: this.getJwt({
         id: user.id,
         name: user.name,
-        lastName: user.lastName,
-        email: user.email,
-        phone: user.phone,
         role: user.member['role'],
-        code: user.code,
+        photo: user.photo,
+        points: user.points,
       }),
     };
   }
