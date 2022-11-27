@@ -30,6 +30,31 @@ export class MembersController {
     return this.membersService.findAll();
   }
 
+  @Get('quantity')
+  getNumberOfMembers() {
+    return this.membersService.getNumberOfMembers();
+  }
+
+  @Get('test2')
+  test2() {
+    return this.membersService.getInformationOfCurrentRiverRace();
+  }
+
+  @Get('decks-pending')
+  getMembersWithDecksPending() {
+    return this.membersService.getMembersWithDecksPending();
+  }
+
+  @Get('donations-pending')
+  getMembersWithDonationsPending() {
+    return this.membersService.getMembersWithDonationsPending();
+  }
+
+  @Get('top5-current-war')
+  getTop5MembersOfCurrentWar() {
+    return this.membersService.getTop5MembersOfCurrentWar();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.membersService.findOne(id);

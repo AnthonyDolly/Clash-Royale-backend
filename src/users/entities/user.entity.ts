@@ -38,6 +38,12 @@ export class User extends Document {
   code: string;
 
   @Prop({
+    required: true,
+    default: 0,
+  })
+  points: number;
+
+  @Prop({
     required: false,
     default: null,
   })

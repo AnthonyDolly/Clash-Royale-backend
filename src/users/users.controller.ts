@@ -33,6 +33,16 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('active')
+  getActiveUsers() {
+    return this.usersService.getActiveUsers();
+  }
+
+  @Get('top5-points')
+  getTop5MembersWithBestPoints() {
+    return this.usersService.getTop5MembersWithBestPoints();
+  }
+
   @Get(':term')
   findOne(@Param('term') term: string) {
     return this.usersService.findOne(term);

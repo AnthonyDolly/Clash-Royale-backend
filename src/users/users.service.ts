@@ -69,6 +69,33 @@ export class UsersService {
       });
   }
 
+  async getActiveUsers() {
+    const users = await this.userModel.find().populate({
+      path: 'member',
+      select: 'name tag isActive',
+    });
+
+    const activeMembers = users.filter((user) => user.member['isActive']);
+
+    return {
+      activeMembers: activeMembers.length,
+    };
+  }
+
+  async getTop5MembersWithBestPoints() {
+    const users = await this.userModel
+      .find()
+      .select('points member')
+      .populate({
+        path: 'member',
+        select: 'name tag',
+      })
+      .sort({ points: -1 })
+      .limit(5);
+
+    return users;
+  }
+
   async findOne(term: string) {
     let user: User;
 
