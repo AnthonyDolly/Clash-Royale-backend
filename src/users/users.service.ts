@@ -69,7 +69,7 @@ export class UsersService {
       });
   }
 
-  async getActiveUsers() {
+  async getNumberOfActiveUsers() {
     const users = await this.userModel.find().populate({
       path: 'member',
       select: 'name tag isActive',
@@ -79,6 +79,26 @@ export class UsersService {
 
     return {
       activeMembers: activeMembers.length,
+    };
+  }
+
+  async getActiveUsers() {
+    const users = await this.userModel
+      .find()
+      .select('name points member invitedBy')
+      .populate({
+        path: 'member',
+        select: 'name tag role isActive',
+      })
+      .populate({
+        path: 'invitedBy',
+        select: 'name lastName',
+      });
+
+    const activeUsers = users.filter((user) => user.member['isActive']);
+
+    return {
+      activeUsers,
     };
   }
 
@@ -101,7 +121,7 @@ export class UsersService {
 
     if (isValidObjectId(term)) {
       user = await this.userModel
-        .findById(term)
+        .findById(term, { password: 0 })
         .populate({
           path: 'invitedBy',
           select: 'name lastName',
@@ -115,7 +135,7 @@ export class UsersService {
 
     if (term.includes('@')) {
       user = await this.userModel
-        .findOne({ email: term })
+        .findOne({ email: term }, { password: 0 })
         .populate({
           path: 'invitedBy',
           select: 'name lastName',
@@ -128,7 +148,7 @@ export class UsersService {
     }
 
     if (!user) {
-      user = await this.userModel.findOne({ code: term });
+      user = await this.userModel.findOne({ code: term }, { password: 0 });
       if (user) return user;
     }
 

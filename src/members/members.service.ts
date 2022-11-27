@@ -73,7 +73,7 @@ export class MembersService {
     return currentRiverRace;
   }
 
-  async getMembersWithDecksPending() {
+  async getNumberOfMembersWithDecksPending() {
     const currentRiverRace = await this.getCurrentRiverRace();
 
     const membersWithDecksPending = currentRiverRace.filter(
@@ -85,7 +85,20 @@ export class MembersService {
     };
   }
 
-  async getMembersWithDonationsPending() {
+  async getMembersWithDecksPending() {
+    const currentRiverRace = await this.getCurrentRiverRace();
+
+    const membersWithDecksPending = currentRiverRace.filter(
+      (member) => member.decksUsedToday < 4,
+    );
+
+    return {
+      date: new Date(),
+      membersWithDecksPending,
+    };
+  }
+
+  async getNumberOfMembersWithDonationsPending() {
     const members = await this.memberModel.find({ isActive: true });
     const membersWithDonationsPending = members.filter(
       (member) => member.donationsReceived < 50,
@@ -93,6 +106,19 @@ export class MembersService {
 
     return {
       membersWithDonationsPending: membersWithDonationsPending.length,
+    };
+  }
+
+  async getMembersWithDonationsPending() {
+    const members = await this.getDataFromClashRoyaleApi();
+
+    const membersWithDonationsPending = members.filter(
+      (member) => member.donationsReceived < 50,
+    );
+
+    return {
+      date: new Date(),
+      membersWithDonationsPending,
     };
   }
 
@@ -106,6 +132,21 @@ export class MembersService {
     return {
       date: new Date(),
       top5Members,
+    };
+  }
+
+  async getCurrentWar() {
+    const currentRiverRace = await this.getCurrentRiverRace();
+
+    if (!currentRiverRace) {
+      return 'No current war';
+    }
+
+    const currentWar = currentRiverRace.sort((a, b) => b.fame - a.fame);
+
+    return {
+      date: new Date(),
+      currentWar,
     };
   }
 
@@ -174,7 +215,12 @@ export class MembersService {
   }
 
   async findAll() {
-    const members = await this.memberModel.find();
+    const members = await this.getDataFromClashRoyaleApi();
+
+    if (!members) {
+      return 'No members found';
+    }
+
     return members;
   }
 

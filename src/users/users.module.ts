@@ -10,6 +10,8 @@ import { AuthModule } from './../auth/auth.module';
 import { SendGridModule } from '@anchan828/nest-sendgrid';
 import { EnvConfiguration } from './../config/app.config';
 import { JoiValidationSchema } from './../config/joi.validation';
+import { ProfileController } from './profile/profile.controller';
+import { ProfileService } from './profile/profile.service';
 
 @Module({
   imports: [
@@ -29,8 +31,8 @@ import { JoiValidationSchema } from './../config/joi.validation';
       apikey: process.env.CLASH_ROYALE_MAIL_API_KEY,
     }),
   ],
-  controllers: [UsersController],
-  providers: [UsersService],
+  controllers: [UsersController, ProfileController],
+  providers: [UsersService, ProfileService],
   exports: [MongooseModule, UsersService],
 })
 export class UsersModule {}

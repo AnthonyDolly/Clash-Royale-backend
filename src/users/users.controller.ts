@@ -33,6 +33,11 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('number-active')
+  getNumberOfActiveUsers() {
+    return this.usersService.getNumberOfActiveUsers();
+  }
+
   @Get('active')
   getActiveUsers() {
     return this.usersService.getActiveUsers();

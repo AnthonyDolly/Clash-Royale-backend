@@ -35,14 +35,19 @@ export class MembersController {
     return this.membersService.getNumberOfMembers();
   }
 
-  @Get('test2')
-  test2() {
-    return this.membersService.getInformationOfCurrentRiverRace();
+  @Get('number-decks-pending')
+  getNumberOfMembersWithDecksPending() {
+    return this.membersService.getNumberOfMembersWithDecksPending();
   }
 
   @Get('decks-pending')
   getMembersWithDecksPending() {
     return this.membersService.getMembersWithDecksPending();
+  }
+
+  @Get('number-donations-pending')
+  getNumberOfMembersWithDonationsPending() {
+    return this.membersService.getNumberOfMembersWithDonationsPending();
   }
 
   @Get('donations-pending')
@@ -53,6 +58,11 @@ export class MembersController {
   @Get('top5-current-war')
   getTop5MembersOfCurrentWar() {
     return this.membersService.getTop5MembersOfCurrentWar();
+  }
+
+  @Get('current-war')
+  getCurrentWar() {
+    return this.membersService.getCurrentWar();
   }
 
   @Get(':id')

@@ -21,6 +21,18 @@ export class User extends Document {
   phone: string;
 
   @Prop({
+    required: false,
+    default: null,
+  })
+  gender: string;
+
+  @Prop({
+    required: false,
+    default: null,
+  })
+  birthDate: Date;
+
+  @Prop({
     required: true,
     unique: true,
   })
@@ -38,10 +50,16 @@ export class User extends Document {
   code: string;
 
   @Prop({
-    required: true,
+    required: false,
     default: 0,
   })
   points: number;
+
+  @Prop({
+    required: false,
+    default: null,
+  })
+  photo: string;
 
   @Prop({
     required: false,
