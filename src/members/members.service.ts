@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateMemberDto } from './dto/create-member.dto';
@@ -154,12 +159,13 @@ export class MembersService {
     if (!id.includes('#')) {
       id = `#${id}`;
     }
-    try {
-      const member = await this.memberModel.findOne({ tag: id });
-      return member;
-    } catch (error) {
-      return error;
+    const member = await this.memberModel.findOne({ tag: id });
+
+    if (!member) {
+      throw new NotFoundException(`Member with tag ${id} not found`);
     }
+
+    return member;
   }
 
   async create() {
@@ -206,6 +212,9 @@ export class MembersService {
           password: 'Abc123',
           code: null,
           tag: '#8V98QYV8P',
+          gender: '',
+          birthDate: null,
+          photo: '',
         });
         newUser.save();
       }

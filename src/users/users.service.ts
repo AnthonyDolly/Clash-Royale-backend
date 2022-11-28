@@ -173,8 +173,12 @@ export class UsersService {
     return null;
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userModel.findByIdAndUpdate(id, updateUserDto);
+
+    if (!user) throw new NotFoundException(`User with ${id} not found`);
+
+    return user;
   }
 
   async remove(id: string) {
@@ -191,10 +195,6 @@ export class UsersService {
     }
 
     await this.userModel.findByIdAndUpdate(user._id, { code }, { new: true });
-
-    setTimeout(() => {
-      this.deleteCode(user);
-    }, 7200000);
 
     return { code };
   }
@@ -272,6 +272,8 @@ export class UsersService {
       throw new BadRequestException(
         `User already exists in the database ${JSON.stringify(error.keyValue)}`,
       );
+    } else if (error.status === 404) {
+      throw new NotFoundException(error.message);
     }
     console.log(error);
     throw new InternalServerErrorException(`Check Server logs`);

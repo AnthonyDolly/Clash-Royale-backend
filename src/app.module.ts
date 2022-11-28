@@ -9,6 +9,7 @@ import { CommonModule } from './common/common.module';
 import { EnvConfiguration } from './config/app.config';
 import { JoiValidationSchema } from './config/joi.validation';
 import { AuthModule } from './auth/auth.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AuthModule } from './auth/auth.module';
     CommonModule,
     MongooseModule.forRoot(process.env.MONGODB),
     AuthModule,
+    FilesModule,
   ],
 })
 export class AppModule {}

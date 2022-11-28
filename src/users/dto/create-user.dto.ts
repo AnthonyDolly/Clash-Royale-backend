@@ -1,11 +1,20 @@
 import {
+  IsDate,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsPhoneNumber,
   IsString,
+  IsUrl,
   Matches,
   MaxLength,
 } from 'class-validator';
+
+enum Gender {
+  HOMBRE = 'hombre',
+  MUJER = 'mujer',
+}
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -19,6 +28,14 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsPhoneNumber('PE')
   phone: string;
+
+  @IsOptional()
+  @IsEnum(Gender)
+  gender: string;
+
+  @IsOptional()
+  @IsDate()
+  birthDate: Date;
 
   @IsNotEmpty()
   @IsEmail()
