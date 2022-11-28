@@ -214,7 +214,6 @@ export class MembersService {
           tag: '#8V98QYV8P',
           gender: '',
           birthDate: null,
-          photo: '',
         });
         newUser.save();
       }
