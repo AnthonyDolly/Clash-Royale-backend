@@ -48,28 +48,7 @@ export class MembersService {
       },
     );
 
-    const membersActive = await this.memberModel
-      .find({ isActive: true })
-      .select('tag -_id');
-
-    const currentDate = new Date();
-    const members = membersActive.map((member) => {
-      const memberData = data.clan.participants.find(
-        (participant) => participant.tag === member.tag,
-      );
-
-      return {
-        name: memberData.name,
-        tag: memberData.tag,
-        fame: memberData.fame,
-        repairPoints: memberData.repairPoints,
-        boatAttacks: memberData.boatAttacks,
-        decksUsed: memberData.decksUsed,
-        decksUsedToday: memberData.decksUsedToday,
-      };
-    });
-
-    return members;
+    return data.clan.participants;
   }
 
   async getInformationOfCurrentRiverRace() {
@@ -91,15 +70,29 @@ export class MembersService {
   }
 
   async getMembersWithDecksPending() {
+    const members = await this.getDataFromClashRoyaleApi();
     const currentRiverRace = await this.getCurrentRiverRace();
 
-    const membersWithDecksPending = currentRiverRace.filter(
-      (member) => member.decksUsedToday < 4,
-    );
+    const membersWithDecksPending = members.map((member) => {
+      const memberData = currentRiverRace.find(
+        (riverRaceMember) => riverRaceMember.tag === member.tag,
+      );
+
+      return {
+        tag: member.tag,
+        name: member.name,
+        role: member.role,
+        decksPending: 4 - memberData.decksUsedToday,
+        fame: memberData.fame,
+        lastSeen: member.lastSeen,
+      };
+    });
 
     return {
       date: new Date(),
-      membersWithDecksPending,
+      membersWithDecksPending: membersWithDecksPending.filter(
+        (member) => member.decksPending > 0,
+      ),
     };
   }
 
