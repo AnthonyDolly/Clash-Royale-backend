@@ -58,14 +58,23 @@ export class MembersService {
   }
 
   async getNumberOfMembersWithDecksPending() {
+    const members = await this.getDataFromClashRoyaleApi();
     const currentRiverRace = await this.getCurrentRiverRace();
 
-    const membersWithDecksPending = currentRiverRace.filter(
+    const membersWithDecksPending = members.map((member) => {
+      const memberWithDeck = currentRiverRace.find(
+        (riverRaceMember) => riverRaceMember.tag === member.tag,
+      );
+
+      return memberWithDeck;
+    });
+
+    const numberOfMembersWithDecksPending = membersWithDecksPending.filter(
       (member) => member.decksUsedToday < 4,
     );
 
     return {
-      membersWithDecksPending: membersWithDecksPending.length,
+      membersWithDecksPending: numberOfMembersWithDecksPending.length,
     };
   }
 
@@ -84,7 +93,7 @@ export class MembersService {
         role: member.role,
         decksPending: 4 - memberData.decksUsedToday,
         fame: memberData.fame,
-        lastSeen: member.lastSeen,
+        lastSeen: this.formatDate(member.lastSeen),
       };
     });
 
@@ -97,7 +106,7 @@ export class MembersService {
   }
 
   async getNumberOfMembersWithDonationsPending() {
-    const members = await this.memberModel.find({ isActive: true });
+    const members = await this.getDataFromClashRoyaleApi();
     const membersWithDonationsPending = members.filter(
       (member) => member.donationsReceived < 50,
     );
@@ -116,7 +125,16 @@ export class MembersService {
 
     return {
       date: new Date(),
-      membersWithDonationsPending,
+      membersWithDonationsPending: membersWithDonationsPending.map((member) => {
+        return {
+          tag: member.tag,
+          name: member.name,
+          role: member.role,
+          donations: member.donations,
+          donationsReceived: member.donationsReceived,
+          lastSeen: this.formatDate(member.lastSeen),
+        };
+      }),
     };
   }
 
@@ -224,7 +242,18 @@ export class MembersService {
 
     return {
       date: new Date(),
-      members,
+      members: members.map((member) => {
+        return {
+          clanRank: member.clanRank,
+          tag: member.tag,
+          name: member.name,
+          role: member.role,
+          donationsReceived: member.donationsReceived,
+          donations: member.donations,
+          trophies: member.trophies,
+          lastSeen: this.formatDate(member.lastSeen),
+        };
+      }),
     };
   }
 
@@ -243,6 +272,61 @@ export class MembersService {
       return {
         miembros: `${members.length}/50`,
       };
+    }
+  }
+
+  private formatDate(lastSeen: string) {
+    const b = lastSeen.split('T');
+
+    const date = b[0].split('');
+
+    const year = date[0] + date[1] + date[2] + date[3];
+
+    const month = date[4] + date[5];
+
+    const day = date[6] + date[7];
+
+    const time = b[1].split('.');
+
+    const hour = time[0].split('');
+
+    const minutes = hour[2] + hour[3];
+
+    const seconds = hour[4] + hour[5];
+
+    const newDate = new Date(
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day),
+      parseInt(hour[0] + hour[1]),
+      parseInt(minutes),
+      parseInt(seconds),
+    );
+
+    const date2 = new Date(
+      new Date().toLocaleString('en', { timeZone: 'WET' }),
+    );
+
+    const diff = date2.getTime() - newDate.getTime();
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+
+    const minutes2 = Math.floor(diff / (1000 * 60));
+
+    const seconds2 = Math.floor(diff / 1000);
+
+    if (days > 0) {
+      return `${days}d`;
+    } else if (hours > 0) {
+      return `${hours}h`;
+    } else if (minutes2 > 0) {
+      return `${minutes2}m`;
+    } else if (seconds2 > 0) {
+      return `${seconds2}s`;
+    } else {
+      return 'En linea';
     }
   }
 }
