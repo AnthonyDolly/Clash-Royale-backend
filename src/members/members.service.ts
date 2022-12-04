@@ -14,6 +14,7 @@ import { UsersService } from '../users/users.service';
 import { AxiosAdapter } from './../common/adapters/axios.adapter';
 import { ClashResponse } from './interfaces/clash-response.interface';
 import { ClashCurrentWarResponse } from './interfaces/clash-current-war-response.interface';
+import { ClanRiverRaceLog } from './interfaces/clan-river-race-log.interface';
 
 @Injectable()
 export class MembersService {
@@ -49,6 +50,19 @@ export class MembersService {
     );
 
     return data.clan.participants;
+  }
+
+  async getLastRiverRaceLog() {
+    const data = await this.http.get<ClanRiverRaceLog>(
+      'https://api.clashroyale.com/v1/clans/%232VY922LJ/riverracelog?limit=4',
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.CLASH_ROYALE_API_KEY}`,
+        },
+      },
+    );
+
+    return data.items;
   }
 
   async getInformationOfCurrentRiverRace() {
@@ -166,6 +180,41 @@ export class MembersService {
     };
   }
 
+  async getRiverRaceLogDates() {
+    const riverRaceLog = await this.getLastRiverRaceLog();
+
+    return riverRaceLog.map((riverRace) => {
+      return {
+        date: this.formatDate(riverRace.createdDate, 2),
+        rank: riverRace.standings
+          .filter((standing) => standing.clan.tag === '#2VY922LJ')
+          .map((standing) => standing.rank),
+        dateString: riverRace.createdDate,
+      };
+    });
+  }
+
+  async getRiverRaceLogByDate(dateString: string) {
+    const riverRaceLog = await this.getLastRiverRaceLog();
+
+    const riverRaceLogByDate = riverRaceLog.find(
+      (riverRace) => riverRace.createdDate === dateString,
+    );
+
+    const riverRaceLogByClanTag = riverRaceLogByDate.standings
+      .filter((standing) => standing.clan.tag === '#2VY922LJ')
+      .map((standing) => {
+        return {
+          date: this.formatDate(riverRaceLogByDate.createdDate, 2),
+          rank: standing.rank,
+          trophyChange: standing.trophyChange,
+          clan: standing.clan,
+        };
+      });
+
+    return riverRaceLogByClanTag;
+  }
+
   async findOne(id: string) {
     if (!id.includes('#')) {
       id = `#${id}`;
@@ -275,7 +324,7 @@ export class MembersService {
     }
   }
 
-  private formatDate(lastSeen: string) {
+  private formatDate(lastSeen: string, option?: number) {
     const b = lastSeen.split('T');
 
     const date = b[0].split('');
@@ -306,6 +355,10 @@ export class MembersService {
     const date2 = new Date(
       new Date().toLocaleString('en', { timeZone: 'WET' }),
     );
+
+    if (option === 2) {
+      return newDate;
+    }
 
     const diff = date2.getTime() - newDate.getTime();
 

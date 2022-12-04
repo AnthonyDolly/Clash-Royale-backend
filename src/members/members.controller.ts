@@ -65,6 +65,16 @@ export class MembersController {
     return this.membersService.getCurrentWar();
   }
 
+  @Get('river-race-log-dates')
+  getRiverRaceLog() {
+    return this.membersService.getRiverRaceLogDates();
+  }
+
+  @Get('river-race-log/:dateString')
+  getRiverRaceLogByDate(@Param('dateString') dateString: string) {
+    return this.membersService.getRiverRaceLogByDate(dateString);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.membersService.findOne(id);
