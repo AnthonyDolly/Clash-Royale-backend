@@ -60,6 +60,11 @@ export class MembersController {
     return this.membersService.getTop5MembersOfCurrentWar();
   }
 
+  @Get('dashboard')
+  getDashboard() {
+    return this.membersService.getDashboard();
+  }
+
   @Get('current-war')
   getCurrentWar() {
     return this.membersService.getCurrentWar();

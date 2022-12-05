@@ -165,6 +165,26 @@ export class MembersService {
     };
   }
 
+  async getDashboard() {
+    const riverRaceLog = await this.getLastRiverRaceLog();
+
+    const dates = [];
+    const fames = [];
+    riverRaceLog.map((riverRace) => {
+      dates.push(this.formatDate(riverRace.createdDate, 2));
+      fames.push(
+        riverRace.standings.filter(
+          (standing) => standing.clan.tag === '#2VY922LJ',
+        )[0].clan.fame,
+      );
+    });
+
+    return {
+      dates,
+      fames,
+    };
+  }
+
   async getCurrentWar() {
     const currentRiverRace = await this.getCurrentRiverRace();
 
