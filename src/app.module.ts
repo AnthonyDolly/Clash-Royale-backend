@@ -10,6 +10,7 @@ import { EnvConfiguration } from './config/app.config';
 import { JoiValidationSchema } from './config/joi.validation';
 import { AuthModule } from './auth/auth.module';
 import { FilesModule } from './files/files.module';
+import { MessagesWsModule } from './messages-ws/messages-ws.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { FilesModule } from './files/files.module';
     MongooseModule.forRoot(process.env.MONGODB),
     AuthModule,
     FilesModule,
+    MessagesWsModule,
   ],
 })
 export class AppModule {}

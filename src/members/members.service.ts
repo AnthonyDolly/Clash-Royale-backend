@@ -72,18 +72,9 @@ export class MembersService {
   }
 
   async getNumberOfMembersWithDecksPending() {
-    const members = await this.getDataFromClashRoyaleApi();
     const currentRiverRace = await this.getCurrentRiverRace();
 
-    const membersWithDecksPending = members.map((member) => {
-      const memberWithDeck = currentRiverRace.find(
-        (riverRaceMember) => riverRaceMember.tag === member.tag,
-      );
-
-      return memberWithDeck;
-    });
-
-    const numberOfMembersWithDecksPending = membersWithDecksPending.filter(
+    const numberOfMembersWithDecksPending = currentRiverRace.filter(
       (member) => member.decksUsedToday < 4,
     );
 
