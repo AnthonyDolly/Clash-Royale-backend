@@ -218,15 +218,161 @@ export class UsersService {
 
     await user.save();
 
+    const tkrp = user.resetPasswordToken;
+
     const sendEmail = await this.sendGrid.send({
       to: email,
       from: process.env.FROM_EMAIL,
       subject: 'Reset Password',
-      html: `
-        <h1>Reset Password</h1>
-        <p>Click the link below to reset your password</p>
-        <a href="http://localhost:4200/reset-password/${user.resetPasswordToken}">Reset Password</a>
-        
+      html: `<html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Mailing</title>
+        <style>
+          @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;700&display=swap");
+    
+          * {
+            margin: 0;
+            font-family: "Roboto", sans-serif;
+            padding: 0;
+            box-sizing: border-box;
+            -moz-stack-sizing: border-box;
+            text-align: center;
+          }
+    
+          html {
+            min-height: 100%;
+            position: relative;
+          }
+    
+          body {
+            /* padding-bottom: 140px */
+          }
+    
+          .container {
+            width: 80%;
+            max-width: 1000px;
+            margin: 0 auto;
+            min-height: 100%;
+            padding: 80px 0 0;
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 140px;
+          }
+    
+          .colorComuna {
+            color: #0b1e51;
+          }
+    
+          .backgroundComuna {
+            background: #0b1e51;
+          }
+    
+          .block-h1,
+          .block-text,
+          .block-button button {
+            margin-top: 40px;
+          }
+    
+          .block-button button {
+            outline: none;
+            border: 0;
+            color: #fff;
+            padding: 15px 25px;
+            font-size: 16px;
+            border-radius: 28px;
+            cursor: pointer;
+          }
+          .block-button button a {
+            text-decoration: none;
+            color: #fff;
+          }
+          hr {
+            margin: 45px 0;
+          }
+    
+          .block-text-two p {
+            text-align: start;
+            margin-bottom: 35px;
+          }
+    
+          .bfooter,
+          .bfooter-movil {
+            color: #fff;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            left: 0;
+            padding: 15px;
+          }
+          .bfooter-movil {
+            display: none;
+          }
+          @media (max-width: 575.98px) {
+            .bfooter {
+              display: none;
+            }
+            .bfooter-movil {
+              display: block;
+            }
+            .container {
+              position: initial;
+            }
+          }
+        </style>
+      </head>
+    
+      <body>
+        <div class="container">
+          <div class="block-image">
+            <img
+              src="https://i.postimg.cc/GtnZMkds/logo.png"
+              alt="Logo Clash"
+              style="max-width: 235px"
+            />
+          </div>
+          <div class="block-h1">
+            <h1 class="color">¡Hola Jairo!</h1>
+          </div>
+          <div class="block-text">
+            <p>
+              ¿Olvidaste tu contraseña? Descuida, podrás obtener una nueva
+              rápidamente. Solo presiona el botón que ves abajo y ¡listo!
+            </p>
+          </div>
+          <div class="block-button">
+            <button type="button" class="backgroundComuna">
+              <a href="http://24.199.69.92:81/acceso/recuperar-contrasenia-step3?tkrp=${tkrp}">Restablecer contraseña</a>
+            </button>
+          </div>
+          <hr />
+          <div class="block-text-two">
+            <p>
+              Si no solicitaste restablecer tu contraseña, borra este mensaje y
+              sigue disfrutanto de la aplicación disponible para ti.
+            </p>
+            <p>
+              Un saludo, <br />
+              El Clan Perú
+            </p>
+          </div>
+          <footer class="backgroundComuna bfooter">
+            <p>&copy 2022 Clan Perú</p>
+          </footer>
+        </div>
+        <footer class="backgroundComuna bfooter-movil">
+          <p>&copy 2022 Clan Perú</p>
+        </footer>
+    
+        <script>
+          function redirect() {
+            window.location.href = "http://24.199.69.92:81/acceso/recuperar-contrasenia-step3?tkrp=${tkrp}";
+          }
+        </script>
+      </body>
+    </html>
       `,
     });
 
