@@ -334,7 +334,7 @@ export class UsersService {
             />
           </div>
           <div class="block-h1">
-            <h1 class="color">¡Hola Jairo!</h1>
+            <h1 class="color">¡Hola ${user.name}</h1>
           </div>
           <div class="block-text">
             <p>
