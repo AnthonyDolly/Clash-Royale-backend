@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { Member } from 'src/members/entities/member.entity';
 
 @Schema()
 export class User extends Document {
@@ -76,12 +75,9 @@ export class User extends Document {
   invitedBy: User | Types.ObjectId;
 
   @Prop({
-    type: Types.ObjectId,
-    ref: Member.name,
     required: true,
-    unique: true,
   })
-  member: Member | Types.ObjectId;
+  tag: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

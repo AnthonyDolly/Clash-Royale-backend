@@ -1,7 +1,5 @@
 import {
   BadRequestException,
-  forwardRef,
-  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -24,16 +22,36 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
-    @Inject(forwardRef(() => MembersService))
     private readonly membersService: MembersService,
     private readonly sendGrid: SendGridService,
   ) {}
 
+  async seed() {
+    await this.userModel.deleteMany({});
+
+    const password = await bcrypt.hash('Abc123', 10);
+
+    const newUser = await this.userModel.create({
+      name: 'Shirley',
+      lastName: 'Cruz',
+      phone: '+51999999999',
+      gender: '',
+      birthDate: null,
+      email: 'shirley@gmail.com',
+      password,
+      code: null,
+      invitedBy: null,
+      tag: '#8V98QYV8P',
+    });
+
+    return {
+      message: 'User created',
+    };
+  }
+
   async create(createUserDto: CreateUserDto) {
     try {
       const { password, ...userData } = createUserDto;
-
-      const member = await this.membersService.findOne(userData.tag);
 
       let invitedBy = null;
       if (userData.code) {
@@ -46,7 +64,6 @@ export class UsersService {
         ...userData,
         code: null,
         password: createUserDto.password,
-        member: member._id,
         invitedBy: invitedBy ? invitedBy._id : null,
       });
 
@@ -57,25 +74,26 @@ export class UsersService {
   }
 
   async findAll() {
-    return await this.userModel
-      .find()
-      .populate({
-        path: 'invitedBy',
-        select: 'name lastName',
-      })
-      .populate({
-        path: 'member',
-        select: 'name tag',
-      });
+    return await this.userModel.find().populate({
+      path: 'invitedBy',
+      select: 'name lastName',
+    });
   }
 
   async getNumberOfActiveUsers() {
-    const users = await this.userModel.find().populate({
-      path: 'member',
-      select: 'name tag isActive',
-    });
+    const users = await this.userModel.find();
 
-    const activeMembers = users.filter((user) => user.member['isActive']);
+    const activeMembers = [];
+
+    const members = await this.membersService.getDataFromClashRoyaleApi();
+
+    users.forEach((user) => {
+      members.find((member) => {
+        if (user.tag === member.tag) {
+          activeMembers.push(member);
+        }
+      });
+    });
 
     return {
       activeMembers: activeMembers.length,
@@ -87,18 +105,24 @@ export class UsersService {
       .find()
       .select('name points member invitedBy')
       .populate({
-        path: 'member',
-        select: 'name tag role isActive',
-      })
-      .populate({
         path: 'invitedBy',
         select: 'name lastName',
       });
 
-    const activeUsers = users.filter((user) => user.member['isActive']);
+    const activeMembers = [];
+
+    const members = await this.membersService.getDataFromClashRoyaleApi();
+
+    users.forEach((user) => {
+      members.find((member) => {
+        if (user.tag === member.tag) {
+          activeMembers.push(member);
+        }
+      });
+    });
 
     return {
-      activeUsers,
+      activeMembers,
     };
   }
 
@@ -106,10 +130,6 @@ export class UsersService {
     const users = await this.userModel
       .find()
       .select('points member')
-      .populate({
-        path: 'member',
-        select: 'name tag',
-      })
       .sort({ points: -1 })
       .limit(5);
 
@@ -120,16 +140,11 @@ export class UsersService {
     let user: User;
 
     if (isValidObjectId(term)) {
-      user = await this.userModel
-        .findById(term, { password: 0 })
-        .populate({
-          path: 'invitedBy',
-          select: 'name lastName',
-        })
-        .populate({
-          path: 'member',
-          select: 'name tag',
-        });
+      user = await this.userModel.findById(term, { password: 0 }).populate({
+        path: 'invitedBy',
+        select: 'name lastName',
+      });
+
       if (user) return user;
     }
 
@@ -139,10 +154,6 @@ export class UsersService {
         .populate({
           path: 'invitedBy',
           select: 'name lastName',
-        })
-        .populate({
-          path: 'member',
-          select: 'name tag',
         });
       if (user) return user;
     }
@@ -155,22 +166,6 @@ export class UsersService {
     if (!user) throw new NotFoundException(`User with ${term} not found`);
 
     return user;
-  }
-
-  async findIfUserExist(tag: string) {
-    const member = await this.membersService.findOne(tag);
-    console.log(member);
-
-    const user = await this.userModel.findOne({
-      member: member._id,
-    });
-    console.log(user);
-
-    if (user) {
-      return user;
-    }
-
-    return null;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {

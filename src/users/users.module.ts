@@ -25,7 +25,7 @@ import { ProfileService } from './profile/profile.service';
         schema: UserSchema,
       },
     ]),
-    forwardRef(() => MembersModule),
+    MembersModule,
     AuthModule,
     SendGridModule.forRoot({
       apikey: process.env.CLASH_ROYALE_MAIL_API_KEY,
