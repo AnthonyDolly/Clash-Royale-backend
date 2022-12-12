@@ -11,12 +11,10 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ValidateMongoIdPipe } from './../common/pipes/validate-mongo-id.pipe';
-import { Auth, GetUser } from '..//auth/decorators';
+import { Auth } from '..//auth/decorators';
 import { ValidRoles } from '..//auth/interfaces';
-import { User } from './entities/user.entity';
 import { RequestResetPasswordDto } from './dto/requestResetPassword.dto';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('users')
 export class UsersController {
@@ -70,20 +68,6 @@ export class UsersController {
     return this.usersService.resetPassword(resetPasswordDto);
   }
 
-  @Patch('change-password')
-  @Auth(
-    ValidRoles.LIDER,
-    ValidRoles.COLEADER,
-    ValidRoles.VETERANO,
-    ValidRoles.MIEMBRO,
-  )
-  changePassword(
-    @GetUser() user: User,
-    @Body() changePasswordDto: ChangePasswordDto,
-  ) {
-    return this.usersService.changePassword(user, changePasswordDto);
-  }
-
   @Patch(':id')
   update(
     @Param('id', ValidateMongoIdPipe) id: string,
@@ -95,17 +79,5 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id', ValidateMongoIdPipe) id: string) {
     return this.usersService.remove(id);
-  }
-
-  @Post('u/generate-code')
-  @Auth(ValidRoles.LIDER, ValidRoles.COLEADER)
-  generateCode(@GetUser() user: User) {
-    return this.usersService.generateCode(user);
-  }
-
-  @Delete('u/delete-code')
-  @Auth(ValidRoles.LIDER, ValidRoles.COLEADER)
-  deleteCode(@GetUser() user: User) {
-    return this.usersService.deleteCode(user);
   }
 }

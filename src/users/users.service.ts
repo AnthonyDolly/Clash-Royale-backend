@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { isValidObjectId, Model } from 'mongoose';
+import { isValidObjectId, Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -16,7 +16,6 @@ import * as bcrypt from 'bcryptjs';
 import { SendGridService } from '@anchan828/nest-sendgrid';
 import { v4 as uuidv4 } from 'uuid';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class UsersService {
@@ -53,10 +52,7 @@ export class UsersService {
     try {
       const { password, ...userData } = createUserDto;
 
-      let invitedBy = null;
-      if (userData.code) {
-        invitedBy = await this.findOne(userData.code);
-      }
+      const invitedBy = await this.findOne(userData.code);
 
       createUserDto.password = await bcrypt.hash(password, 10);
 
@@ -64,7 +60,7 @@ export class UsersService {
         ...userData,
         code: null,
         password: createUserDto.password,
-        invitedBy: invitedBy ? invitedBy._id : null,
+        invitedBy,
       });
 
       return user;
@@ -74,7 +70,7 @@ export class UsersService {
   }
 
   async findAll() {
-    return await this.userModel.find().populate({
+    return await this.userModel.find({}, { password: 0 }).populate({
       path: 'invitedBy',
       select: 'name lastName',
     });
@@ -103,7 +99,7 @@ export class UsersService {
   async getActiveUsers() {
     const users = await this.userModel
       .find()
-      .select('name points member invitedBy')
+      .select('name points invitedBy tag')
       .populate({
         path: 'invitedBy',
         select: 'name lastName',
@@ -116,7 +112,14 @@ export class UsersService {
     users.forEach((user) => {
       members.find((member) => {
         if (user.tag === member.tag) {
-          activeMembers.push(member);
+          activeMembers.push({
+            name: user.name,
+            nickname: member.name,
+            role: member.role,
+            tag: member.tag,
+            points: user.points,
+            invitedBy: user.invitedBy,
+          });
         }
       });
     });
@@ -129,11 +132,29 @@ export class UsersService {
   async getTop5MembersWithBestPoints() {
     const users = await this.userModel
       .find()
-      .select('points member')
+      .select('points tag')
       .sort({ points: -1 })
       .limit(5);
 
-    return users;
+    const members = await this.membersService.getDataFromClashRoyaleApi();
+
+    const top5Members = [];
+
+    users.forEach((user) => {
+      members.find((member) => {
+        if (user.tag === member.tag) {
+          top5Members.push({
+            id: user.id,
+            name: member.name,
+            points: user.points,
+          });
+        }
+      });
+    });
+
+    return {
+      top5Members,
+    };
   }
 
   async findOne(term: string) {
@@ -178,30 +199,6 @@ export class UsersService {
 
   async remove(id: string) {
     return await this.userModel.findByIdAndDelete(id);
-  }
-
-  async generateCode(user: User) {
-    const code = Math.random().toString(36).substring(2, 10);
-
-    const userCode = await this.userModel.findOne({ _id: user._id });
-
-    if (userCode.code) {
-      throw new BadRequestException(`User already has a code`);
-    }
-
-    await this.userModel.findByIdAndUpdate(user._id, { code }, { new: true });
-
-    return { code };
-  }
-
-  async deleteCode(user: User) {
-    await this.userModel.findByIdAndUpdate(
-      user._id,
-      { code: null },
-      { new: true },
-    );
-
-    return { message: 'Code deleted' };
   }
 
   async requestResetPassword(requestResetPasswordDto: RequestResetPasswordDto) {
@@ -389,22 +386,6 @@ export class UsersService {
     await user.save();
 
     return { message: 'Password reset' };
-  }
-
-  async changePassword(user: User, changePassword: ChangePasswordDto) {
-    const { oldPassword, newPassword } = changePassword;
-
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
-
-    if (!isMatch) {
-      throw new BadRequestException('Invalid password');
-    }
-
-    user.password = await bcrypt.hash(newPassword, 10);
-
-    await user.save();
-
-    return { message: 'Password changed' };
   }
 
   private handleExceptions(error: any) {
