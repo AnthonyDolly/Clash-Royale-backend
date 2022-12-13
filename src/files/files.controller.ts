@@ -2,7 +2,6 @@ import { Response } from 'express';
 import { diskStorage } from 'multer';
 
 import {
-  BadRequestException,
   Controller,
   Get,
   Param,
