@@ -13,7 +13,11 @@ import { MessagesWsService } from './messages-ws.service';
 
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:81', 'http://201.230.171.118:4200'],
+    origin: [
+      'http://localhost:81',
+      'http://201.230.171.118:4200',
+      'http://38.25.9.39:81',
+    ],
     credentials: true,
   },
 })
