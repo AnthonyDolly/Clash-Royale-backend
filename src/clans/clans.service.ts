@@ -51,14 +51,30 @@ export class ClansService {
   }
 
   async getNumberOfMembersWithDecksPending() {
+    const members = await this.getDataFromClashRoyaleApi();
     const currentRiverRace = await this.getCurrentRiverRace();
 
-    const numberOfMembersWithDecksPending = currentRiverRace.filter(
-      (member) => member.decksUsedToday < 4,
-    );
+    const numberOfMembersWithDecksPending = [];
+
+    members.forEach((member) => {
+      currentRiverRace.find((riverRaceMember) => {
+        if (riverRaceMember.tag === member.tag) {
+          numberOfMembersWithDecksPending.push({
+            tag: member.tag,
+            name: member.name,
+            role: member.role,
+            decksPending: 4 - riverRaceMember.decksUsedToday,
+            fame: riverRaceMember.fame,
+            lastSeen: this.formatDate(member.lastSeen),
+          });
+        }
+      });
+    });
 
     return {
-      membersWithDecksPending: numberOfMembersWithDecksPending.length,
+      membersWithDecksPending: numberOfMembersWithDecksPending.filter(
+        (member) => member.decksPending > 0,
+      ).length,
     };
   }
 

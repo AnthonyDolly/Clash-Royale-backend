@@ -11,7 +11,11 @@ import { JwtPayload } from '../auth/interfaces';
 import { NewMessageDto } from './dto/new-message.dto';
 import { MessagesWsService } from './messages-ws.service';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
 export class MessagesWsGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {

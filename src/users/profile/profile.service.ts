@@ -3,16 +3,83 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 
 import { UsersService } from '../users.service';
+import { MembersService } from './../../members/members.service';
 import { User } from '../entities/user.entity';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 
+const modules = [
+  {
+    id: 1,
+    name: 'Home',
+    path: '/home',
+    image: 'home.svg',
+  },
+  {
+    id: 2,
+    name: 'Mi perfil',
+    path: '/profile',
+    image: 'profile.svg',
+  },
+  {
+    id: 3,
+    name: 'Clan',
+    path: '/clan',
+    image: 'clan.svg',
+  },
+  {
+    id: 4,
+    name: 'Recompensas',
+    path: '/rewards',
+    image: 'rewards.svg',
+  },
+  {
+    id: 5,
+    name: 'Sorteos',
+    path: '/raffles',
+    image: 'raffles.svg',
+  },
+  {
+    id: 6,
+    name: 'Mensajes',
+    path: '/messages',
+    image: 'messages.svg',
+  },
+];
+
 @Injectable()
 export class ProfileService {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly membersService: MembersService,
+  ) {}
 
   async getProfile(user: User) {
     return this.usersService.findOne(user.id);
+  }
+
+  async getPermissions(user: User) {
+    const members = await this.membersService.getDataFromClashRoyaleApi();
+
+    const member = members.find((member) => member.tag === user.tag);
+
+    if (member.role === 'leader') {
+      return {
+        modules,
+      };
+    } else if (member.role === 'coLeader') {
+      return {
+        modules: modules.filter((module) => module.id !== 5),
+      };
+    } else if (member.role === 'elder') {
+      return {
+        modules: modules.filter((module) => module.id !== 5),
+      };
+    } else {
+      return {
+        modules: modules.filter((module) => module.id !== 5),
+      };
+    }
   }
 
   async updateProfile(user: User, updateUserDto: UpdateUserDto) {

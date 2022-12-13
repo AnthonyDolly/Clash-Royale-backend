@@ -28,6 +28,17 @@ export class ProfileController {
     ValidRoles.VETERANO,
     ValidRoles.MIEMBRO,
   )
+  @Get('permissions')
+  getPermissions(@GetUser() user: User) {
+    return this.profileService.getPermissions(user);
+  }
+
+  @Auth(
+    ValidRoles.LIDER,
+    ValidRoles.COLEADER,
+    ValidRoles.VETERANO,
+    ValidRoles.MIEMBRO,
+  )
   @Patch()
   updateProfile(@GetUser() user: User, @Body() updateUserDto: UpdateUserDto) {
     return this.profileService.updateProfile(user, updateUserDto);
