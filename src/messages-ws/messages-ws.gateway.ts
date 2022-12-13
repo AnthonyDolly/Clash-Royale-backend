@@ -15,6 +15,7 @@ import { MessagesWsService } from './messages-ws.service';
   cors: {
     origin: [
       'http://localhost:81',
+      'http://localhost:4200',
       'http://201.230.171.118:4200',
       'http://38.25.9.39:81',
     ],
