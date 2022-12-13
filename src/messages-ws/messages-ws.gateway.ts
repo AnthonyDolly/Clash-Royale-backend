@@ -13,7 +13,7 @@ import { MessagesWsService } from './messages-ws.service';
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: '*:*',
   },
 })
 export class MessagesWsGateway

@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { FilesModule } from './files/files.module';
 import { MessagesWsModule } from './messages-ws/messages-ws.module';
 import { ClansModule } from './clans/clans.module';
+import { MembersWinnersModule } from './members-winners/members-winners.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ClansModule } from './clans/clans.module';
     FilesModule,
     MessagesWsModule,
     ClansModule,
+    MembersWinnersModule,
   ],
 })
 export class AppModule {}
