@@ -108,15 +108,34 @@ export class ClansService {
   }
 
   async getTop5MembersOfCurrentWar() {
+    const members = await this.getDataFromClashRoyaleApi();
     const currentRiverRace = await this.getCurrentRiverRace();
 
-    const top5Members = currentRiverRace
+    const top5Members = [];
+
+    members.forEach((member) => {
+      currentRiverRace.find((riverRaceMember) => {
+        if (riverRaceMember.tag === member.tag) {
+          top5Members.push({
+            tag: member.tag,
+            name: member.name,
+            fame: riverRaceMember.fame,
+            repairPoints: riverRaceMember.repairPoints,
+            boatAttacks: riverRaceMember.boatAttacks,
+            decksUsed: riverRaceMember.decksUsed,
+            decksUsedToday: riverRaceMember.decksUsedToday,
+          });
+        }
+      });
+    });
+
+    const top5MembersByFame = top5Members
       .sort((a, b) => b.fame - a.fame)
       .slice(0, 5);
 
     return {
       date: new Date(),
-      top5Members,
+      top5Members: top5MembersByFame,
     };
   }
 
