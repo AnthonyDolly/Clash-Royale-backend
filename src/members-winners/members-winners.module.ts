@@ -11,6 +11,7 @@ import {
   MembersWinnerSchema,
 } from './entities/members-winner.entity';
 import { AuthModule } from './../auth/auth.module';
+import { MembersModule } from './../members/members.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AuthModule } from './../auth/auth.module';
       },
     ]),
     AuthModule,
+    MembersModule,
   ],
   controllers: [MembersWinnersController],
   providers: [MembersWinnersService],
